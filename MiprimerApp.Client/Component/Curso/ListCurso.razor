@@ -1,0 +1,68 @@
+﻿@page "/listcurso"
+@using MiPrimeraApp.Library
+@using MiprimerApp.Client.Services
+@inject CursoService oCursoService
+
+@if(lista is null)
+{
+    <h1>Cargando...</h1>
+}else
+{
+    <table class="table">
+       <thead>
+            <tr>
+                <th>Id</th>
+                <th>Nombre</th>
+                <th>No. Creditos</th>
+                <th>Operaciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var curso in lista)
+            {
+                <tr>
+                    <td>@curso.idcurso</td>
+                    <td>@curso.nombrecurso</td>
+                    <td>@curso.numerocreditos</td>
+                    <td>
+                        <button class="btn-primary" @onclick="(()=>Editar(curso))">Editar</button>
+                        <button class="btn-danger" @onclick="(()=>Eliminar(curso.idcurso))">Eliminar</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+
+    public List<CursoCLS> lista { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        lista = oCursoService.ListarCursos();
+        oCursoService.Onchage += RefrezcarLista;
+        await Task.CompletedTask;
+    }
+
+    public async Task RefrezcarLista()
+    {
+        lista = oCursoService.ListarCursos();
+        StateHasChanged();
+        await Task.CompletedTask;
+    }
+
+    public async Task Eliminar(int idcurso)
+    {
+        oCursoService.Eliminar(idcurso);
+        await Task.CompletedTask;
+        //StateHasChanged();
+    }
+
+    public async Task Editar(CursoCLS oCursoCLS)
+    {
+        oCursoService.NotificarEditar(oCursoCLS);
+        //StateHasChanged();
+        await Task.CompletedTask;
+    }
+}

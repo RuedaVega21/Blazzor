@@ -1,0 +1,59 @@
+﻿@using MiPrimeraApp.Library
+@using MiprimerApp.Client.Services
+@inject CarreraService oCarreraService
+
+<EditForm Model="@oCarreraCLS" OnValidSubmit="@Guardar">
+    <DataAnnotationsValidator />
+    <div class="mt-3">
+        <label>Ingrese el Id</label>
+        <InputNumber class="form-control" @bind-Value="oCarreraCLS.idcarrera" />
+        <ValidationMessage For="(()=>oCarreraCLS.idcarrera)" />
+    </div>
+
+    <div class="mt-3">
+        <label>Ingrese Nombre</label>
+        <InputText class="form-control" @bind-Value=" oCarreraCLS.nombrecarrera" />
+        <ValidationMessage For="(()=>oCarreraCLS.nombrecarrera)" />
+    </div>
+    
+    <div class="mt-3">
+        <label>Ingrese Descripción</label>
+        <InputTextArea class="form-control" @bind-Value="oCarreraCLS.descripcioncarrera" />
+        <ValidationMessage For="(()=>oCarreraCLS.descripcioncarrera)" />
+    </div>
+
+    <div class="mt-3">
+        <button class="btn btn-primary" type="submit"> Guardar</button>
+        <button class="btn btn-primary" @onclick="(()=>Limpiar())" type="button"> Limpiar</button>
+    </div>
+    
+</EditForm>
+@code {
+    public CarreraCLS oCarreraCLS { get; set; } = new CarreraCLS();
+
+    protected override async Task OnInitializedAsync()
+    {
+        oCarreraService.OnEdit+=RecuperarCarrera;
+    }
+
+    public async Task Guardar()
+    {
+        oCarreraService.Agregar(oCarreraCLS);
+        oCarreraCLS = new CarreraCLS();
+        await Task.CompletedTask;
+    }
+
+    public async Task RecuperarCarrera(CarreraCLS oCarreraRecuperar)
+    {
+        oCarreraCLS = oCarreraRecuperar;
+        StateHasChanged();
+        await Task.CompletedTask;
+    }
+
+    public async Task Limpiar()
+    {
+        oCarreraCLS = new CarreraCLS();
+        await Task.CompletedTask;
+    }
+
+}

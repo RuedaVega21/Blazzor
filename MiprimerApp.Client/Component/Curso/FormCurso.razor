@@ -1,0 +1,75 @@
+﻿@using MiPrimeraApp.Library
+@using MiprimerApp.Client.Services
+@inject CursoService oCursoService
+@inject CarreraService oCarreraService
+
+<EditForm Model="@oCursoCLS" OnValidSubmit="Guardar">
+    <DataAnnotationsValidator/>
+    <div class="mt-3">
+        <label>Id Curso</label>
+            <InputNumber class="form-control" @bind-Value="oCursoCLS.idcurso" />
+    </div>
+    
+    <div class="mt-3">
+        <label>Nombre del curso</label>
+        <InputText class="form-control" @bind-Value="oCursoCLS.nombrecurso" />
+        <ValidationMessage For="(()=>oCursoCLS.nombrecurso)" />
+    </div>
+
+    <div class="mt-1">
+        <label>Cantidad de creditos</label>
+        <InputNumber class="form-control" @bind-Value="oCursoCLS.numerocreditos" />
+        <ValidationMessage For="(()=>oCursoCLS.numerocreditos)" />
+    </div>
+
+    <div class="mt-3">
+        <label>Seleccione una carrera</label>
+        <InputSelect @bind-Value="oCursoCLS.idcarrera" class="form-control">
+            <option value="0">--Seleccione--</option>
+            @foreach(var carrera in listacarrera)
+            {
+                <option value="@carrera.idcarrera">@carrera.nombrecarrera</option>
+            }
+        </InputSelect>
+        <ValidationMessage For="(()=>oCursoCLS.idcarrera)" />
+    </div>
+
+    <button type="submit" class="btn-success">Guardar</button>        
+    <button type="button" @onclick="(()=>Limpiar())" class="btn-primary">Limpiar</button>        
+
+</EditForm>
+
+@code {
+    public CursoCLS oCursoCLS { set; get; } = new CursoCLS();
+    public List<CarreraCLS> listacarrera { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        oCursoService.OnEdit += RecuperarCurso;
+        listacarrera = oCarreraService.ListarCarreras();
+        await Task.CompletedTask;
+    }
+
+    public async Task Guardar()
+    {
+        oCursoService.Agregar(oCursoCLS);
+        oCursoCLS = new CursoCLS();
+        await Task.CompletedTask;
+    }
+
+    public async Task RecuperarCurso(CursoCLS oCursoRecuperadoCLS)
+    {
+        oCursoCLS = oCursoRecuperadoCLS;
+        StateHasChanged();
+        await Task.CompletedTask;
+    }
+
+    public async Task Limpiar()
+    {
+        oCursoCLS = new CursoCLS();
+        await Task.CompletedTask;
+    }
+
+}
+
+

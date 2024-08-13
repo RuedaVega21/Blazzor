@@ -1,0 +1,97 @@
+﻿@page "/Triangulo"
+@using Microsoft.AspNetCore.Components.Web
+@using System
+
+<h3>Trinagulo</h3>
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-4">
+            <label for="sideA">Lado A:</label>
+            <input type="number" id="sideA" class="form-control" @bind="SideA" placeholder="Ingresa el lado A" />
+        </div>
+        <div class="col-md-4">
+            <label for="sideB">Lado B:</label>
+            <input type="number" id="sideB" class="form-control" @bind="SideB" placeholder="Ingresa el lado B" />
+        </div>
+        <div class="col-md-4">
+            <label for="sideC">Lado C:</label>
+            <input type="number" id="sideC" class="form-control" @bind="SideC" placeholder="Ingresa el lado C" />
+        </div>
+    </div>
+
+    <div class="row mt-3">
+        <div class="col-md-4">
+            <label for="angleA">Ángulo A (grados):</label>
+            <input type="number" id="angleA" class="form-control" @bind="AngleA" placeholder="Ingresa el ángulo A" />
+        </div>
+        <div class="col-md-4">
+            <label for="angleB">Ángulo B (grados):</label>
+            <input type="number" id="angleB" class="form-control" @bind="AngleB" placeholder="Ingresa el ángulo B" />
+        </div>
+        <div class="col-md-4">
+            <label for="height">Altura:</label>
+            <input type="number" id="height" class="form-control" @bind="Height" placeholder="Ingresa la altura" />
+        </div>
+    </div>
+
+    <div class="row mt-3">
+        <div class="col-md-12 d-flex justify-content-end">
+            <button class="btn btn-primary" @onclick="CalculateAll">Calcular</button>
+        </div>
+    </div>
+
+    @if (Area > 0)
+    {
+        <div class="row mt-4">
+            <div class="col-md-6">
+                <p>El área del triángulo es: <strong>@Area</strong></p>
+                <p>El perímetro del triángulo es: <strong>@Perimeter</strong></p>
+                <p>Lado A: <strong>@SideA</strong></p>
+                <p>Lado B: <strong>@SideB</strong></p>
+                <p>Lado C: <strong>@SideC</strong></p>
+                <p>Ángulo A: <strong>@AngleA</strong>°</p>
+                <p>Ángulo B: <strong>@AngleB</strong>°</p>
+                <p>Ángulo C: <strong>@AngleC</strong>°</p>
+            </div>
+            <div class="col-md-6">
+                <svg width="@SvgWidth" height="@(SvgHeight)" viewBox="0 0 @SvgWidth @SvgHeight">
+                    <polygon points="0,@SvgHeight @SideB,@SvgHeight @SideC,0" style="fill:lime;stroke:purple;stroke-width:2" />
+                </svg>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    private double SideA { get; set; }
+    private double SideB { get; set; }
+    private double SideC { get; set; }
+    private double AngleA { get; set; }
+    private double AngleB { get; set; }
+    private double AngleC { get; set; }
+    private double Height { get; set; }
+    private double Area { get; set; }
+    private double Perimeter { get; set; }
+    private double SvgWidth => Math.Max(SideB, 100);
+    private double SvgHeight => Math.Max(Height, 100);
+
+    private void CalculateAll()
+    {
+        // Calcular Ángulo C
+        AngleC = 180 - AngleA - AngleB;
+
+        // Calcular Área usando la fórmula de Herón si tenemos tres lados
+        double s = (SideA + SideB + SideC) / 2;
+        Area = Math.Sqrt(s * (s - SideA) * (s - SideB) * (s - SideC));
+
+        // Calcular Perímetro
+        Perimeter = SideA + SideB + SideC;
+
+        // Calcular Altura si no se proporciona
+        if (Height == 0)
+        {
+            Height = (2 * Area) / SideB; // Considerando SideB como la base
+        }
+    }
+}

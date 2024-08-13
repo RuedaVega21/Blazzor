@@ -1,0 +1,69 @@
+﻿@using MiPrimeraApp.Library
+@using MiprimerApp.Client.Services
+@inject CarreraService oCarreraService
+
+@if (lista is null)
+{
+    <h1>Cargando...</h1>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Nombre</th>
+                <th>Descripción</th>
+                <th>Operaciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var carrera in lista)
+            {
+                <tr>
+                    <td>@carrera.idcarrera</td>
+                    <td>@carrera.nombrecarrera</td>
+                    <td>@carrera.descripcioncarrera</td>
+                    <td>
+
+                        <button class="btn btn-primary"
+                                @onclick="(()=> Editar(carrera))">
+                            Editar
+                        </button>
+                        <button class="btn btn-danger"
+                                @onclick="(()=> Eliminar(carrera.idcarrera))">
+                            Eliminar
+                        </button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+@code {
+    public List<CarreraCLS> lista { get; set; }
+    protected override async Task OnInitializedAsync()
+    {
+        lista = oCarreraService.ListarCarreras();
+        oCarreraService.OnChange += RefrezcarLista;
+        await Task.CompletedTask;
+    }
+
+    private async Task Eliminar(int idcarrera)
+    {
+        oCarreraService.Eliminar(idcarrera);
+        await Task.CompletedTask;
+    }
+
+    private async Task RefrezcarLista()
+    {
+        lista = oCarreraService.ListarCarreras();
+        StateHasChanged();
+        await Task.CompletedTask;
+    }
+
+    public async Task Editar(CarreraCLS oCarreraCLS)
+    {
+        oCarreraService.NotificarEditar(oCarreraCLS);
+    }
+}
